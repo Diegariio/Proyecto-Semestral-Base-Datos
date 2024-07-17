@@ -464,3 +464,41 @@ INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
 (2, 50429, '2024-04-01', '2024-04-15'),  -- La pieza de cine 50429 se filma en la locación 2 desde 2024-04-01 hasta 2024-04-15
 (3, 50431, '2024-05-01', '2024-05-15'),  -- La pieza de cine 50431 se filma en la locación 3 desde 2024-05-01 hasta 2024-05-15
 (4, 50426, '2024-06-01', '2024-06-15');  -- La pieza de cine 50426 se filma en la locación 4 desde 2024-06-01 hasta 2024-06-15
+
+
+--MAS DATOS PARA QUE Q1 ENTREGUE UNA RESPUESTA
+INSERT INTO Estrena (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
+(1, 50427, '2024-05-01', '2024-05-02'),
+(3, 50430, '2024-06-01', '2024-06-03'),
+(4, 50430, '2024-07-01', '2024-07-01'),
+(5, 50427, '2024-02-01', '2024-05-01'),
+(6, 50427, '2024-03-01', '2024-03-05');
+INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
+(5, 50430, '2024-05-01', '2024-05-22'),
+(7, 50430, '2024-06-01', '2024-06-24'),
+(7, 50427, '2024-07-01', '2024-07-25');
+INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
+(2, 50430, '2024-05-01', '2024-05-22');
+
+/* Q1: Por cada pieza de cine que no es animada, mostrar el codigo y nombre de la pieza y cantidad total de
+locaciones utilizadas por la pieza de cine, considere locaciones de filmaci´on y estreno. Muestre aquellas
+piezas cinematogr´aficas con m´as de 4 locaciones. TIP: utilice vistas y funciones de agregaci´on.*/
+
+CREATE VIEW vista_locaciones_por_pieza AS
+SELECT PC_CODIGO, COUNT(*) AS total_locaciones
+FROM (		--Usamos una subconsulta
+    SELECT DISTINCT PC_CODIGO, LOC_CODIGO FROM Se_Filma --consulta
+    UNION   --unimos las filas de las 2 consultas dentro de la subconsulta, con union que elimina los duplicados
+    SELECT DISTINCT PC_CODIGO, LOC_CODIGO FROM Estrena  --consulta
+) AS locaciones_union
+GROUP BY PC_CODIGO; --obtenemos una vista con el codigo de una pieza de cine y la cantidad de locaciones utilizadas
+
+SELECT PC.PC_CODIGO, PC.PC_NOMBRE, VL.total_locaciones
+FROM Pieza_Cine PC JOIN vista_locaciones_por_pieza VL ON PC.PC_CODIGO = VL.PC_CODIGO --igualamos el codigo de las piezas de cine con la vista anterior
+WHERE PC.TC_CODIGO != 3 AND VL.total_locaciones > 4; -- con la condicion de que no sean animadas y el total de locaciones debe ser mayor a 4 
+
+
+/*Q2: Mostrar por cada pieza de cine el codigo, nombre, rol de personas que participan y total de personas por
+cada rol. Considere personas que no estudian en academias y no son el director/es de la pieza y viven en
+US. Considere solo piezas que est´an en estado de edici´on actualmente y son del tipo ”cortos”.*/
+
