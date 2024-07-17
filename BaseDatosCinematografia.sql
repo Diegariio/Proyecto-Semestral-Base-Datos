@@ -265,6 +265,8 @@ CREATE TABLE Pieza_Cine (
     TC_CODIGO INTEGER,
     FOREIGN KEY (TC_CODIGO) REFERENCES Tipo_Cine
 );
+
+
 -- Insertar las películas en la tabla Pieza_Cine
 INSERT INTO Pieza_Cine VALUES
 (50426, 'Shrek 2', '01/07/2002', '01/07/2003', 3),
@@ -466,7 +468,13 @@ INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
 (4, 50426, '2024-06-01', '2024-06-15');  -- La pieza de cine 50426 se filma en la locación 4 desde 2024-06-01 hasta 2024-06-15
 
 
---MAS DATOS PARA QUE Q1 ENTREGUE UNA RESPUESTA
+
+
+/* Q1: Por cada pieza de cine que no es animada, mostrar el codigo y nombre de la pieza y cantidad total de
+locaciones utilizadas por la pieza de cine, considere locaciones de filmaci´on y estreno. Muestre aquellas
+piezas cinematogr´aficas con m´as de 4 locaciones. TIP: utilice vistas y funciones de agregaci´on.*/
+
+--MAS DATOS PARA QUE Q1 ENTREGUE UNA RESPUESTA (al final podemos mover esto en la creacion de tablas)
 INSERT INTO Estrena (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
 (1, 50427, '2024-05-01', '2024-05-02'),
 (3, 50430, '2024-06-01', '2024-06-03'),
@@ -480,10 +488,7 @@ INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
 INSERT INTO Se_Filma (LOC_CODIGO, PC_CODIGO, FECHA_INICIO, FECHA_FIN) VALUES
 (2, 50430, '2024-05-01', '2024-05-22');
 
-/* Q1: Por cada pieza de cine que no es animada, mostrar el codigo y nombre de la pieza y cantidad total de
-locaciones utilizadas por la pieza de cine, considere locaciones de filmaci´on y estreno. Muestre aquellas
-piezas cinematogr´aficas con m´as de 4 locaciones. TIP: utilice vistas y funciones de agregaci´on.*/
-
+--CONSULTA 
 CREATE VIEW vista_locaciones_por_pieza AS
 SELECT PC_CODIGO, COUNT(*) AS total_locaciones
 FROM (		--Usamos una subconsulta
@@ -497,8 +502,26 @@ SELECT PC.PC_CODIGO, PC.PC_NOMBRE, VL.total_locaciones
 FROM Pieza_Cine PC JOIN vista_locaciones_por_pieza VL ON PC.PC_CODIGO = VL.PC_CODIGO --igualamos el codigo de las piezas de cine con la vista anterior
 WHERE PC.TC_CODIGO != 3 AND VL.total_locaciones > 4; -- con la condicion de que no sean animadas y el total de locaciones debe ser mayor a 4 
 
-
 /*Q2: Mostrar por cada pieza de cine el codigo, nombre, rol de personas que participan y total de personas por
 cada rol. Considere personas que no estudian en academias y no son el director/es de la pieza y viven en
 US. Considere solo piezas que est´an en estado de edici´on actualmente y son del tipo ”cortos”.*/
+
+--INSERCIONES PARA QUE Q2 ENTREGUE UNA RESPUESTA (al final podemos mover esto en la creacion de tablas)
+UPDATE Pieza_cine SET TC_CODIGO = 2 
+WHERE PC_CODIGO = 50427 -- cambio de tipo de cine a corto para pelicula 50427, la cual ya esta en estado de edicion 
+
+INSERT INTO Pais VALUES
+(011, 'US');
+
+INSERT INTO Ciudad VALUES 
+(8, 'New York', 011),
+(9, 'Miami', 011),
+
+INSERT INTO Persona (PER_CODIGO, PER_NOMBRE, PER_FECHA_NAC, PER_NACIONALIDAD, PER_TELEFONO, PER_EMAIL, RP_CODIGO, CIU_CODIGO) VALUES
+(13, 'Jean Philips', '1960-10-25', 'Estadounidense', '+569 18967524', 'correodejean@example.com', 7,9), --es maquillador de miami
+(14, 'Micaela Magmanus', '1967-10-25', 'Estadounidense', '+569 184787524', 'correodemicaela@example.com', 2,8); --es actriz
+
+INSERT INTO Participa (PER_CODIGO, PC_CODIGO, MONTO, FECHA_INICIO, FECHA_FIN) VALUES
+(13, 50427, 1000700, '01/10/2008', '01/07/2009'),
+(14, 50427, 1003200, '01/11/2008', '01/07/2009'); --2 estaunidensen que participan en un corto y no estudian ni son directores 
 
